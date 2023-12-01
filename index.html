@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+
+    <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap" rel="stylesheet">
+    
+    <title>Frontend Mentor | Todo app</title>
+  </head>
+  <body>
+
+    <img src="./images/bg-mobile-light.jpg" alt="background-mountains" id="bg-image">
+
+    <div id="main-frame">
+      <div id="top-bar">
+        <h1>TODO</h1>
+        <button id="theme-change-button" onclick="changeTheme()"><img src="./images/icon-sun.svg" alt="dark-theme-image"></button>
+      </div>
+
+      <div id="todo-list-container">
+
+        <div id="create-new-todo" class="todo-label no-move">
+
+          <div class="todo-left">
+            <button class="check-button"><img src="./images/icon-check.svg" alt="check-icon" class="check-image"></button>
+            <input class="todo-text" type="text" placeholder="Create a new todo...">
+          </div>
+          
+          <button class="remove-button"><img src="./images/icon-cross.svg" alt="cross-icon" class="cross-image"></button>
+        </div>
+
+        <div id="todo-list">
+          
+
+        </div>
+        <div id="todo-template" class="todo-label">
+
+          <div class="todo-left">
+            <button class="check-button check-button-active" onclick="completeTodo(this)"><img src="./images/icon-check.svg" alt="check-icon" class="check-image"></button>
+            <p class="todo-text">Text</p>
+          </div>
+          
+          <button class="remove-button" onclick="deleteTodo(this)"><img src="./images/icon-cross.svg" alt="cross-icon" class="cross-image"></button>
+        </div>
+
+        <div id="status-bar" class="todo-label">
+          <p id="items-left">0 items left</p>
+          <div id="desktop-selector" class="status-selector">
+            <button id="all-button" class="status-button currently-selected">All</button>
+            <button id="active-button" class="status-button">Active</button>
+            <button id="completed-button" class="status-button">Completed</button>
+          </div>
+          <button id="clear-completed">Clear completed</button>
+        </div>
+
+      </div>
+
+      <div id="mobile-selector" class="status-selector">
+        <button id="all-button" class="status-button currently-selected">All</button>
+        <button id="active-button" class="status-button">Active</button>
+        <button id="completed-button" class="status-button">Completed</button>
+      </div>
+
+      <p id="instructions-text">Drag and drop to reorder list</p>
+
+    </div>
+
+  </body>
+  <script src="./main.js"></script>
+</html>
