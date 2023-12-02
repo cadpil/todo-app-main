@@ -142,6 +142,22 @@ function showType(activeType, button) {
     updateStatusBar()
 }
 
+function clearCompleted() {
+
+    const itemsClone = {}
+    Object.assign(itemsClone, todoItems)
+    deleted = []
+   
+    for (const i in itemsClone) {
+        if (!todoItems[i]) {continue}
+        if (todoItems[i].active == false) {
+            const id = deleteTodo(todoItems[i].reference.querySelector('.remove-button'), false)
+            deleted.push(id)
+        }
+    }
+
+}
+
 
 
 
@@ -174,7 +190,7 @@ function completeTodo(item) {
     showType(currentlyActive, null)
 }
 
-function deleteTodo(item) {
+function deleteTodo(item, deleteHigherInstances) {
     item = item.closest('.todo-label')
     const itemId = item.id.split("-")[1]
     
@@ -182,6 +198,7 @@ function deleteTodo(item) {
 
     for (key in todoItems) {
         if (parseInt(key) > parseInt(itemId)) {
+            if (!deleteHigherInstances && todoItems[key].active == false) {continue}
             const itemContent = todoItems[key]
             delete todoItems[key]
             todoItems[parseInt(key) - 1] = itemContent
@@ -194,7 +211,7 @@ function deleteTodo(item) {
 
     updateStatusBar()
     showType(currentlyActive, null)
-    return true
+    return itemId
 }
 
 function createTodo(todoText) {
