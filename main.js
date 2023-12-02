@@ -12,6 +12,7 @@ const todoTemplate = document.querySelector("#todo-template")
 const statusBar = document.querySelector("#status-bar")
 
 let currentId = 0
+let currentlyActive = "All"
 
 let theme = "dark"
 let themes = null
@@ -47,6 +48,7 @@ const getActiveItems = function() {
     let current = 0
     let activeItems = {}
     let inactiveItems = {}
+    let visibleItems = {}
     for (key in todoItems) {
         if (todoItems[key].active == true) { 
             activeItems[key] = todoItems[key];
@@ -54,23 +56,31 @@ const getActiveItems = function() {
         } else {
             inactiveItems[key] = todoItems[key];
         }
+
+        if (window.getComputedStyle(todoItems[key].reference, null).display == "flex") {
+            visibleItems[key] = todoItems[key]
+        }
     }  
-    return [current, activeItems, inactiveItems]
+    return [current, activeItems, inactiveItems, visibleItems]
 }
 
 function updateStatusBar() {
     let itemPrefix = "s"
     
-    const activeItems = getActiveItems()[0]
+    const activeItems = getActiveItems()
     allItems = Object.keys(todoItems).length
     
     if (allItems > 0) {
-        statusBar.style.borderRadius = "0 0 10px 10px";
-        activeItems == 1 ? itemPrefix = "" : itemPrefix = "s"
+        if (Object.keys(activeItems[3]).length > 0) {
+            statusBar.style.borderRadius = "0 0 10px 10px";
+        } else {
+            statusBar.style.borderRadius = ""
+        }
+        activeItems[0] == 1 ? itemPrefix = "" : itemPrefix = "s"
     } else {
-        statusBar.style.borderRadius = "10px 10px 10px 10px";
+        statusBar.style.borderRadius = "";
     }
-    statusBar.querySelector("#items-left").textContent = activeItems.toString() + " item" + itemPrefix + " left"
+    statusBar.querySelector("#items-left").textContent = activeItems[0].toString() + " item" + itemPrefix + " left"
 }
 
 
@@ -81,10 +91,12 @@ function updateStatusBar() {
 function showType(activeType, button) {
     const activeItems = getActiveItems()
 
-    document.querySelectorAll(".status-button").forEach((e) => {
-        e.classList.remove("currently-selected")
-    })
-    button.classList.add("currently-selected")
+    if (button) {
+        document.querySelectorAll(".status-button").forEach((e) => {
+            e.classList.remove("currently-selected")
+        })
+        button.classList.add("currently-selected")
+    }
 
     let completedTypeVal = ""
     let activeTypeVal = ""
@@ -95,10 +107,8 @@ function showType(activeType, button) {
     } else if (activeType == "Completed") {
         completedTypeVal = ""
         activeTypeVal = "none"
-    } else {
-        completedTypeVal = ""
-        activeTypeVal = ""
     }
+    currentlyActive = activeType
 
     for (item in activeItems[1]) {
         activeItems[1][item].reference.style.display = activeTypeVal
@@ -106,6 +116,30 @@ function showType(activeType, button) {
     for (item in activeItems[2]) {
         activeItems[2][item].reference.style.display = completedTypeVal
     }
+
+    const todoLabels = todoList.querySelectorAll('.todo-label')
+    todoLabels.forEach((e) => {
+        e.classList.remove("first-item")
+    })
+
+    let labelExists = false
+    if (todoLabels.length == 0) {return}
+    for (const i in todoLabels) {
+        if (typeof(todoLabels[i]) != "object") {break}
+        if (window.getComputedStyle(todoLabels[i], null).display == "flex") {
+            todoLabels[i].classList.add("first-item")
+            labelExists = true
+            break
+        }
+    }
+
+    if (labelExists) {
+        statusBar.classList.remove("first-item")
+    } else {
+        statusBar.classList.add("first-item")
+    }
+
+    updateStatusBar()
 }
 
 
@@ -137,6 +171,7 @@ function completeTodo(item) {
         todoItems[itemId].active = true
     }
     updateStatusBar()
+    showType(currentlyActive, null)
 }
 
 function deleteTodo(item) {
@@ -158,6 +193,7 @@ function deleteTodo(item) {
     currentId --;
 
     updateStatusBar()
+    showType(currentlyActive, null)
     return true
 }
 
@@ -168,6 +204,10 @@ function createTodo(todoText) {
     todoClone.id = "item-" + currentId.toString()
     cloneText.textContent = todoText
 
+    if (currentId == 0) {
+        todoClone.classList.add("first-item")
+    }
+
     todoList.append(todoClone)
     todoItems[currentId.toString()] = {
         "reference": todoClone,
@@ -175,6 +215,7 @@ function createTodo(todoText) {
     }
     
     currentId ++;
+    showType(currentlyActive, null)
     return true;
 }
 

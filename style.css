@@ -73,6 +73,8 @@ body {
     justify-content: space-between;
     padding: 15px 20px;
     border-bottom: 1px solid var(--border-color);
+    transition-property: color, background-color;
+    transition-duration: 250ms;
 }
 
 #create-new-todo {
@@ -147,10 +149,20 @@ body {
     justify-content: center;
 }
 
-#item-0 {
+.first-item {
     border-radius: 10px 10px 0 0;
     border-bottom: 1px solid var(--border-color);
 }
+
+/* .todo-label:not( [style*='display: none'] ){
+    border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.todo-label:not(#todo-list div:first-child) {
+    border-radius: 0;
+    border-bottom: 1px solid var(--border-color);
+} */
 
 
 #status-bar {
