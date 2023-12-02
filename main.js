@@ -146,13 +146,11 @@ function clearCompleted() {
 
     const itemsClone = {}
     Object.assign(itemsClone, todoItems)
-    deleted = []
    
     for (const i in itemsClone) {
         if (!todoItems[i]) {continue}
         if (todoItems[i].active == false) {
-            const id = deleteTodo(todoItems[i].reference.querySelector('.remove-button'), false)
-            deleted.push(id)
+            deleteTodo(todoItems[i].reference.querySelector('.remove-button'), false)
         }
     }
 
@@ -198,7 +196,11 @@ function deleteTodo(item, deleteHigherInstances) {
 
     for (key in todoItems) {
         if (parseInt(key) > parseInt(itemId)) {
-            if (!deleteHigherInstances && todoItems[key].active == false) {continue}
+            if (!deleteHigherInstances && todoItems[key].active == false) {
+                if (!todoItems[key]["reference"]) {continue}
+                todoItems[key].reference.remove(); 
+                continue
+            }
             const itemContent = todoItems[key]
             delete todoItems[key]
             todoItems[parseInt(key) - 1] = itemContent
