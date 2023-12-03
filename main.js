@@ -19,12 +19,6 @@ let themes = null
 
 let todoItems = {}
 
-fetch('./themes.json').then((response) => {
-    return response.json()
-}).then((json) => {
-    themes = json
-});
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,9 +28,11 @@ function changeTheme() {
     if (theme == "light") {
         theme = "dark";
         themeChangeButton.querySelector("img").src = "./images/icon-sun.svg";
+        localStorage.setItem("theme", "dark")
     } else {
         theme = "light";
         themeChangeButton.querySelector("img").src = "./images/icon-moon.svg";
+        localStorage.setItem("theme", "light")
     }
     
     for (let item in themes[theme]) {
@@ -81,6 +77,8 @@ function updateStatusBar() {
         statusBar.style.borderRadius = "";
     }
     statusBar.querySelector("#items-left").textContent = activeItems[0].toString() + " item" + itemPrefix + " left"
+
+    localStorage.setItem('todoItems', JSON.stringify(todoItems))
 }
 
 
@@ -216,7 +214,7 @@ function deleteTodo(item, deleteHigherInstances) {
     return itemId
 }
 
-function createTodo(todoText) {
+function createTodo(todoText, active) {
     const todoClone = todoTemplate.cloneNode(true)
     const cloneText = todoClone.querySelector(".todo-text")
 
@@ -230,11 +228,15 @@ function createTodo(todoText) {
     todoList.append(todoClone)
     todoItems[currentId.toString()] = {
         "reference": todoClone,
-        "active": true
+        "active": !active,
+        "content": todoText
     }
     
     currentId ++;
     showType(currentlyActive, null)
+    completeTodo(todoClone.querySelector(".check-button"))
+    updateStatusBar()
+
     return true;
 }
 
@@ -249,10 +251,9 @@ createTodoText.addEventListener("keydown", event => {
         if (createTodoText.value == "") {
             return null
         };
-        const result = createTodo(createTodoText.value)
+        const result = createTodo(createTodoText.value, true)
         if (result == true) {
             createTodoText.value = ""
-            updateStatusBar()
         }
     }
 })
@@ -261,4 +262,35 @@ document.querySelectorAll(".status-button").forEach((e) => {
     e.addEventListener("click", () => {
         showType(e.textContent, e)
     })
+})
+
+const todoData = localStorage.getItem('todoItems')
+const themeData = localStorage.getItem('theme')
+
+const parsedTodoData = JSON.parse(todoData)
+
+if (parsedTodoData && !(Object.keys(parsedTodoData).length == 0) && typeof(parsedTodoData) == "object") {
+    for (item in parsedTodoData) {
+        createTodo(parsedTodoData[item].content, parsedTodoData[item].active)
+    }
+}
+
+async function getThemes() {
+    const response = await fetch('./themes.json')
+    const json = await response.json()
+    return json;
+    // await fetch('./themes.json').then((response) => {
+    //     return response.json()
+    // }).then((json) => {
+    //     return json
+    // });
+}
+
+getThemes().then(themesData => {
+    themesData;
+    themes = themesData
+    if (themeData) {
+        themeData == "light" ? theme = "dark" : theme = "light"
+        changeTheme()
+    }
 })
