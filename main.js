@@ -215,6 +215,11 @@ function deleteTodo(item, deleteHigherInstances) {
 }
 
 function createTodo(todoText, active) {
+    if (todoText.toLowerCase() === "kose mabusai") {
+        document.querySelector("#kose-egg").style.visibility = "visible"
+        return true
+    }
+
     const todoClone = todoTemplate.cloneNode(true)
     const cloneText = todoClone.querySelector(".todo-text")
 
@@ -279,11 +284,6 @@ async function getThemes() {
     const response = await fetch('./themes.json')
     const json = await response.json()
     return json;
-    // await fetch('./themes.json').then((response) => {
-    //     return response.json()
-    // }).then((json) => {
-    //     return json
-    // });
 }
 
 getThemes().then(themesData => {
